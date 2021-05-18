@@ -19,9 +19,11 @@ namespace Tasks
         /// <returns></returns>
         public IEnumerable<T> Merge<T>(params IEnumerable<T>[] sortedInputs) where T : IComparable<T>
         {
+            //Asymptotic complexity - O(nk), where
+            //n - number of elements in lists
+            //k - number of lists
             List<IEnumerator<T>> enumerators = new List<IEnumerator<T>>();
 
-            //здесь можно было бы через linq, но его нет в using и я добавлять не буду тогда
             foreach (var item in sortedInputs)
             {
                 var enumerator = item.GetEnumerator();
@@ -29,6 +31,7 @@ namespace Tasks
                     enumerators.Add(enumerator);
             }
 
+            
             while(enumerators.Count > 0)
             {
                 int minEnumeratorIndex = 0;
@@ -36,15 +39,11 @@ namespace Tasks
                 {
                     if (enumerators[minEnumeratorIndex].Current.CompareTo(enumerators[i].Current) > 0)
                         minEnumeratorIndex = i;
-                }
+                }                
 
-                var minEnumerator = enumerators[minEnumeratorIndex];
-                enumerators.RemoveAt(minEnumeratorIndex);
-                
-
-                yield return minEnumerator.Current;
-                if (minEnumerator.MoveNext())
-                    enumerators.Insert(0, minEnumerator);
+                yield return enumerators[minEnumeratorIndex].Current;
+                if (!enumerators[minEnumeratorIndex].MoveNext())
+                    enumerators.RemoveAt(minEnumeratorIndex);
             }
         }        
     }
