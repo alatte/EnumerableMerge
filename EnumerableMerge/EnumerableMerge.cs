@@ -19,12 +19,6 @@ namespace Tasks
         /// <returns></returns>
         public IEnumerable<T> Merge<T>(params IEnumerable<T>[] sortedInputs) where T : IComparable<T>
         {
-            //Так как делать вложенные циклы и перебирать n массивов n раз - очевидно не лучшая идея, то мысль в следующем:
-            //Работаем все время с нулевыми элементами массивов (через енумератор). Находим из них минимальный
-            //(сортировка вставками, наверное), помещаем его в результирующий список и двигаем на
-            //следующий элемент. Начинаем сначала
-
-            List<T> result = new List<T>();
             List<IEnumerator<T>> enumerators = new List<IEnumerator<T>>();
 
             //здесь можно было бы через linq, но его нет в using и я добавлять не буду тогда
@@ -37,9 +31,6 @@ namespace Tasks
 
             while(enumerators.Count > 0)
             {
-                //теперь сортировка
-                //мне же не нужна полная сортировка
-                //достаточно просто найти индекс енумератора с наименьшим текущим значением
                 int minEnumeratorIndex = 0;
                 for (int i = 0; i < enumerators.Count; i++)
                 {
@@ -51,12 +42,10 @@ namespace Tasks
                 enumerators.RemoveAt(minEnumeratorIndex);
                 
 
-                result.Add(minEnumerator.Current);
+                yield return minEnumerator.Current;
                 if (minEnumerator.MoveNext())
                     enumerators.Insert(0, minEnumerator);
             }
-
-            return result;
         }        
     }
 }
