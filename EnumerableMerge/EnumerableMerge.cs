@@ -22,6 +22,7 @@ namespace Tasks
             //Asymptotic complexity - O(nk), where
             //n - number of elements in lists
             //k - number of lists
+            List<T> result = new List<T>();
             List<IEnumerator<T>> enumerators = new List<IEnumerator<T>>();
 
             foreach (var item in sortedInputs)
@@ -41,10 +42,12 @@ namespace Tasks
                         minEnumeratorIndex = i;
                 }                
 
-                yield return enumerators[minEnumeratorIndex].Current;
+                result.Add(enumerators[minEnumeratorIndex].Current);
                 if (!enumerators[minEnumeratorIndex].MoveNext())
                     enumerators.RemoveAt(minEnumeratorIndex);
             }
+
+            return result;
         }        
     }
 }
